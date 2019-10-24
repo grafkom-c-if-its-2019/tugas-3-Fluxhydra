@@ -51,22 +51,6 @@
       // -0.12375, 0.0, -0.193875, -0.17, 0.193875, -0.17, //CEF
       // -0.12375, 0.0, 0.12375, 0.0, 0.193875, -0.17 //CDF
 
-      //Kedua gambar perlu ditampilkan dalam 1 canvas
-      //Adjustment #1: Seluruh nilai X - 0.5 (garis A) 
-      //Adjustment #2: Seluruh nilai X + 0.5 (segitiga A)
-
-      //Garis A
-      -0.5, 0.7, -1, -0.5, //AG
-      -1, -0.5, -0.833, -0.5, //GH
-      -0.833, -0.5, -0.693875, -0.17, //HE
-      -0.693875, -0.17, -0.306125, -0.17, //EF
-      -0.306125, -0.17, -0.167, -0.5, //FI
-      -0.167, -0.5, 0.0, -0.5, //IJ
-      0.0, -0.5, -0.5, 0.7, //JA
-      -0.5, 0.3, -0.62375, 0.0, //BC
-      -0.62375, 0.0, -0.37625, 0.0, //CD
-      -0.37625, 0.0, -0.5, 0.3, //DB
-
       //Segitiga A
       0.5, 0.7, 0.5, 0.3, 0.0, -0.5, //ABG
       0.5, 0.3, 0.0, -0.5, 0.167, -0.5, //BGH
@@ -87,35 +71,33 @@
     var thetaLocation = gl.getUniformLocation(program, 'theta');
     var theta = 0.0;
 
-    var scaleXLocation = gl.getUniformLocation(program, 'scaleX');
-    var scaleYLocation = gl.getUniformLocation(program, 'scaleY');
-    var scaleX = 1.0;
-    var scaleY = 1.0;
-    var melebar = 1;
+    var oColor = gl.getUniformLocation(program, 'oColor');
+    var opacity = 1.0;
+    var colorFlag = 1;
 
     function render()
     {
-        // Bersihkan layar jadi hitam
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      // Bersihkan layar jadi hitam
+      gl.clearColor(0.0, 0.0, 0.0, 1.0);
     
-        // Bersihkan buffernya canvas
-        gl.clear(gl.COLOR_BUFFER_BIT);
+      // Bersihkan buffernya canvas
+      gl.clear(gl.COLOR_BUFFER_BIT);
 
-        theta += 0.01;
-        gl.uniform1f(thetaLocation, theta);
+      // Warna gradient
+      if(opacity == 1) colorFlag = 1;
+      else if (opacity < 0.75) colorFlag = 0;
 
-        if (scaleX >= 1) melebar = -1;
-        else if (scaleX <= -1) melebar = 1;
-        scaleX += 0.0087 * melebar;
-        gl.uniform1f(scaleXLocation, scaleX);
-        gl.uniform1f(scaleYLocation, scaleY);
+      if(colorFlag == 1) opacity -= 0.005;
+      else opacity += 0.005;
+      gl.uniform1f(oColor, opacity);
 
-        //Rotasi huruf sebelah kiri terhadap dirinya
-        gl.drawArrays(gl.LINES,0,20);
+      // Kecepatan rotasi Y
+      theta += 0.01;
+      gl.uniform1f(thetaLocation, theta);
 
-        //Skalasi huruf sebelah kanan terhadap dirinya
-        //gl.drawArrays(gl.TRIANGLES,20,38);
-        requestAnimationFrame(render);
+      //Gambar A
+      gl.drawArrays(gl.TRIANGLES, 0, 18);
+      requestAnimationFrame(render);
     };
     render();
   }
